@@ -1,0 +1,51 @@
+clc, clearvars, close all
+
+[x, fs] = audioread('music.mp3');
+x = x(:,1);
+
+t = (0: length(x) - 1 )/ fs;
+tr_music = x';
+
+figure;
+subplot(2,1,1);
+plot(t,tr_music);
+title("Time Plotting of Music File")
+xlabel('Time Axis (seconds)');
+ylabel('Signal Amplitudes');
+
+N = length(x);
+xfft = fft(x);
+xfreq = (0 : N - 1) * (fs / N);
+
+subplot(2,1,2);
+plot(xfreq,abs(xfft));
+title("Magnitude of FFT of Music File")
+xlabel('Frequency Axis (Hz)');
+ylabel('Magnitude values');
+xlim([0 fs / 2]);
+
+
+% Equalizer Bands
+fbass = 250;
+fmid1 = 250;
+fmid2 = 4000;
+ftreble = 4000;
+
+
+% Making required filters for each band
+Nb = 120; % ORDER OF THE BASS FILTER
+bbass = fir1(Nb, fbass / (fs / 2));
+
+Nm = 120;
+bmid = fir1(Nm, [fmid1 fmid2] ./ (fs / 2));
+
+Nt = 120;
+btreble = fir1(Nt, ftreble / (fs / 2) , "high");
+
+% Applying filters for our music file
+xbass = filter(bbass,1,x);
+xmid = filter(bmid, 1 , x);
+xtreble = filter(btreble, 1 , x);
+
+% Gains for different bands
+gbass = 
